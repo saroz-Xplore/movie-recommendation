@@ -1,0 +1,16 @@
+{
+  "name": "movie-recommendation",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "nodemon"
+  },
+  "keywords": [],
+  "author": "SaSim",
+  "license": "ISC",
+  "description": "a simple movie recommendation package",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
