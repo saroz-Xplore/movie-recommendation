@@ -11,10 +11,13 @@ const RegisterUser = async(req, res) => {
                 message: "Error: Existing User " })
         }
 
+        const PhotoUrl = `public/images/${req.file.filename}`
+
         const user = await User.create({
             username,
             email,
-            password  
+            password,
+            userPhoto: PhotoUrl  
         })
 
         const usercreated = await User.findById(user._id).select("-password")
