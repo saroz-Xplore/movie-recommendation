@@ -1,4 +1,5 @@
 import { User } from "../models/user.models.js"
+import multer from "multer"
 
 const RegisterUser = async(req, res) => {
     try {
