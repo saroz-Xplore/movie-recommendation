@@ -4,13 +4,15 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "nodemon"
+    "start": "nodemon src/index.js"
   },
   "keywords": [],
   "author": "SaSim",
   "license": "ISC",
   "description": "a simple movie recommendation package",
   "dependencies": {
-    "express": "^4.21.2"
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mongoose": "^8.12.2"
   }
 }
