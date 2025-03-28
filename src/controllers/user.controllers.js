@@ -1,5 +1,5 @@
 import { User } from "../models/user.models.js"
-import multer from "multer"
+import {uploadToCloudinary} from "../utils/cloudinary.js";
 
 const RegisterUser = async(req, res) => {
     try {
@@ -13,12 +13,13 @@ const RegisterUser = async(req, res) => {
         }
 
         const PhotoUrl = `public/images/${req.file.filename}`
+        const upload = await  uploadToCloudinary(PhotoUrl)
 
         const user = await User.create({
             username,
             email,
             password,
-            userPhoto: PhotoUrl  
+            userPhoto: upload.url
         })
 
         const usercreated = await User.findById(user._id).select("-password")
