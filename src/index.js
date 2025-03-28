@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import { DbConnect } from "./db/index.js";
 import cookieParser from 'cookie-parser'
 import { userRoutes } from "./routes/user.routes.js";
+import { movieRoutes } from "./routes/movie.routes.js";
 
 
 const port = 5000
@@ -26,6 +27,7 @@ app.use(express.urlencoded())
 app.use(express.static("public"))
 
 app.use('/api/v1/auth', userRoutes)
+app.use('/api/v1/movie', movieRoutes)
 
 
 
