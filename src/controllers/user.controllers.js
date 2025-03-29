@@ -42,4 +42,37 @@ const RegisterUser = async(req, res) => {
     }
 }
 
-export {RegisterUser}
+const userLogin = async(req, res) => {
+    try {
+        
+        const {email, password} = req.body
+        if(!email){
+            return res.status(400).json({
+                message: 'Email must be required'
+            })
+        }
+        const user = await User.findOne({email})
+        if(!user) {
+            return res.status(404).json({
+                message: "User not found"
+            })
+        }
+        const isPasswordValid = await user.isPasswordCorrect(password)
+        if(!isPasswordValid){
+            return res.status(401).json({message: "Invalid Credentials"
+            })
+        }
+
+        return res.status(200).json({
+            message: "User Successfully Logged In", data: user
+        })
+
+    } catch (error) {
+        console.log("something went wrong");
+        res.status(500).json({
+            message: "Error while logging"
+        })
+    }
+}
+
+export {RegisterUser, userLogin}

@@ -1,8 +1,19 @@
 import { Movie } from "../models/movie.models.js";
+import { User } from "../models/user.models.js";
 
 const addMovie = async (req, res) => {
     try {
         const { title, genre, director, releaseYear, rating, description, posterUrl } = req.body;
+
+        if (!req.user) {
+            return res.status(401).json({ message: "Unauthorized Access" });
+        }
+        const user = await User.findById(req.user._id);
+        if (!user || !user.isAdmin) {
+            return res.status(403).json({ 
+                message: "Access Denied: Admins Only" 
+            });
+        }
 
         const existingMovie = await Movie.findOne({ title: title });
         if (existingMovie) {

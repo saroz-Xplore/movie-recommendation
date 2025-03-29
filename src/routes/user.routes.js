@@ -1,6 +1,6 @@
 
 import { Router } from "express";
-import { RegisterUser } from "../controllers/user.controllers.js";
+import { RegisterUser, userLogin } from "../controllers/user.controllers.js";
 import { upload } from "../middleware/multer.middleware.js";
 import Joi from 'joi'
 import validator from 'express-joi-validation'
@@ -37,6 +37,8 @@ router.route('/registration').post(upload.single("userPhoto"),  async (req, res,
     });
 }
 }, RegisterUser)
+
+router.route('/login').post(userLogin)
 
 
 export const userRoutes = router
