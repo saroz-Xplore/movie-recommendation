@@ -1,6 +1,32 @@
 import { User } from "../models/user.models.js"
 import {uploadToCloudinary} from "../utils/cloudinary.js";
 
+const generateAccessToken = async(userId) => {
+    try {
+        const user = await User.findById(userId)
+        const accessToken = user.generateAccessToken()
+
+        return {accessToken}
+    } catch (error) {
+        console.log("Error generating access token", error);
+    }
+}
+
+const generateRefreshToken = async(userId) => {
+    try {
+        const user = await User.findById(userId)
+        const refreshToken = user.generateRefreshToken()
+
+        user.refreshToken= refreshToken
+        user.save({validateBeforeSave: false})
+
+        return {refreshToken}
+    } catch (error) {
+        console.log("error generating refresh token", error);
+    }
+}
+
+
 const RegisterUser = async(req, res) => {
     try {
         const {username, email, password} = req.body
@@ -63,9 +89,22 @@ const userLogin = async(req, res) => {
             })
         }
 
-        return res.status(200).json({
-            message: "User Successfully Logged In", data: user
-        })
+        const {accessToken} = await generateAccessToken(user.id)
+        const {refreshToken} = await generateRefreshToken(user._id)
+    
+        const loggedInfo = await User.findById(user._id).select("-password -refreshToken")
+
+        const options= {
+            httpOnly: true,
+            secure: true
+        }
+        return res.status(200)
+        .cookie("accessToken", accessToken, options)
+            .cookie("refreshToken", refreshToken, options)   
+            .json({
+                message: "User Successfully Logged In",
+                data: loggedInfo
+            }) 
 
     } catch (error) {
         console.log("something went wrong");
