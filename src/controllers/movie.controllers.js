@@ -79,4 +79,49 @@ const getAllMovies = async (req, res) => {
     }
 }
 
-export { addMovie, getAllMovies, fetchsingleinfo }
+const updateMovie = async (req, res) => {
+    try {
+      const { title, description, genre, releaseDate, rating, director } = req.body;
+
+      const user = await User.findById(req.user?._id);
+      if (!user || !user.isAdmin) {
+          return res.status(403).json({ 
+            message: "Unauthorized: Admin access" 
+        });
+      }
+  
+      const movie = await Movie.findByIdAndUpdate(
+        req.params._id,
+        {
+            $set: {
+                title,
+                description,
+                genre,
+                releaseDate,
+                rating,
+                director
+            }
+        },
+        { 
+            new: true 
+        }
+    );
+
+      if (!movie) {
+        return res.status(404).json({ 
+            message: 'Movie not found' 
+        });
+      }
+
+      res.status(200).json({ 
+        message: "Movie updated successfully", 
+        data: movie 
+    });
+
+    } catch (err) {
+      res.status(400).json({ error: err.message });
+    }
+  };
+  
+
+export { addMovie, getAllMovies, fetchsingleinfo, updateMovie }
