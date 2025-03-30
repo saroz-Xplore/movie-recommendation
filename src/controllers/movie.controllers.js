@@ -56,4 +56,27 @@ const getAllMovies = async (req, res) => {
     });
   }
 };
-export { addMovie, getAllMovies }
+
+  const fetchsingleinfo = async(req, res) => {
+    try {
+        const movie= await Movie.findById(req.params._id)
+   
+        if(!movie){
+            return res.status(404).json({
+                message: "Movie not found"
+            })
+        }
+        return res.status(200).json({
+            message: "Single info Fetched",
+            data: movie
+        })
+        
+    } catch (error) {
+        console.log("Error", error)
+         res.status(500).json({      
+            message:"Error fetching single info"
+        })
+    }
+}
+
+export { addMovie, getAllMovies, fetchsingleinfo }
