@@ -3,49 +3,52 @@ import { User } from "../models/user.models.js";
 
 const addMovie = async (req, res) => {
     try {
-        const { title, genre, director, releaseYear, rating, description, posterUrl } = req.body;
 
-        if (!req.user) {
-            return res.status(401).json({ message: "Unauthorized Access" });
-        }
-        const user = await User.findById(req.user._id);
+        const user = await User.findById(req.user?._id);
+
         if (!user || !user.isAdmin) {
-            return res.status(403).json({ 
-                message: "Access Denied: Admins Only" 
+            return res.status(403).json({
+                message: "Unauthorized: Admin access"
             });
         }
 
-        const existingMovie = await Movie.findOne({ title: title });
-        if (existingMovie) {
-            return res.status(409).json({ 
-                message: "Error: Movie already exists" 
-            });
-        }
+      const { title, description, genre, releaseDate, rating, director, cast } = req.body;
 
-        const movie = await Movie.create({
-            title,
-            genre,
-            director,
-            releaseYear,
-            rating,
-            description,
-            posterUrl
-        });
+      const movie = new Movie({
+        title,
+        description,
+        genre,
+        releaseDate,
+        rating,
+        director,
+        cast
+      });
+  
+      await movie.save();
 
-        res.status(201).json({ 
-            message: "Movie added successfully", 
-            data: movie 
-        });
+      res.status(201).json({
+        message: "Movie added successfully", 
+        data: movie
+      });
+    } catch (err) {
+        console.log("error:", err.message ); 
+      res.status(400).json({ 
+        message: "Error while adding movie"
+    });
+    }
+  };
 
-    } catch (error) {
-        console.log("Error", error);
-        res.status(500).json({ 
-            message: "Unable to add movie" 
-        });
-    }}
 
 const getAllMovies = async (req, res) => {
   try {
+
+    const user = await User.findById(req.user?._id);
+      if (!user || !user.isAdmin) {
+          return res.status(403).json({ 
+            message: "Unauthorized: Admin access" 
+        });
+      }
+
     const movies = await Movie.find();  
 
     res.status(200).json(movies);
@@ -122,6 +125,34 @@ const updateMovie = async (req, res) => {
       res.status(400).json({ error: err.message });
     }
   };
-  
 
-export { addMovie, getAllMovies, fetchsingleinfo, updateMovie }
+  const deleteMovie = async (req, res) => {
+    try {
+
+        const user = await User.findById(req.user?._id);
+        if (!user || !user.isAdmin) {
+            return res.status(403).json({ 
+              message: "Unauthorized: Admin access" 
+          });
+        }
+
+      const movie = await Movie.findByIdAndDelete(req.params._id);
+      console.log('movie', movie);
+      if (!movie) {
+        return res.status(404).json({ 
+            message: 'Movie not found' 
+        });
+      }
+  
+      res.status(200).json({ 
+        message: 'Movie deleted successfully' 
+    });
+
+    } catch (err) {
+      res.status(500).json({ 
+        error: err.message 
+    });
+    }
+  };
+
+export { addMovie, getAllMovies, fetchsingleinfo, updateMovie, deleteMovie }
