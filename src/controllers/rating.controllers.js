@@ -1,0 +1,52 @@
+import { Rating } from "../models/rating.models.js";
+import { Movie } from "../models/movie.models.js";
+import { User } from "../models/user.models.js";
+
+const addRating = async (req, res) => {
+  try {
+
+    const user = await User.findById(req.user?._id);
+          if (user.isAdmin) {
+              return res.status(403).json({ 
+                message: "Unauthorized: Admin access" 
+            });
+          }
+
+    const { movieId, rating, review } = req.body;
+
+    const movie = await Movie.findById(movieId);
+    if (!movie) {
+      return res.status(404).json({ 
+        message: "Movie not found" 
+    });
+    }
+
+    const existingRating = await Rating.findOne({ movieId, userId: req.user?._id });
+    if (existingRating) {
+      return res.status(400).json({ 
+        message: "You have already rated this movie" 
+    });
+    }
+
+    const newRating = new Rating({
+      movieId,
+      userId: req.user?._id,
+      rating,
+      review
+    });
+
+    await newRating.save();
+
+    res.status(201).json({ 
+        message: "Movie Rated successfully", 
+        data: newRating 
+    });
+  } catch (err) {
+    console.log("error:", error.message)
+    res.status(500).json({
+        message: "Error rating"
+    });
+  }
+};
+
+export {addRating}

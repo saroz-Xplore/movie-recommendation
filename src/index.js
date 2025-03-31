@@ -4,7 +4,7 @@ import { DbConnect } from "./db/index.js";
 import cookieParser from 'cookie-parser'
 import { userRoutes } from "./routes/user.routes.js";
 import { movieRoutes } from "./routes/movie.routes.js";
-
+import { ratingRoutes } from "./routes/rating.routes.js";
 
 const port = 5000
 const app = express()
@@ -28,6 +28,7 @@ app.use(express.static("public"))
 
 app.use('/api/v1/auth', userRoutes)
 app.use('/api/v1/movie', movieRoutes)
+app.use('/api/v1/rating', ratingRoutes)
 
 
 
