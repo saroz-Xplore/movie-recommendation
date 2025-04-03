@@ -74,4 +74,30 @@ const getRatingsForMovie = async (req, res) => {
       });
   }
 };
-export {addRating, getRatingsForMovie}
+
+const getUserRatings = async (req, res) => {
+  try {
+      const userId = req.user?._id;
+
+      const ratings = await Rating.find({ userId }).populate("movieId", "title genre");
+
+      if (!ratings.length) {
+          return res.status(404).json({
+              message: "No ratings found for this user"
+          });
+      }
+
+      res.status(200).json({
+          message: "User ratings fetched successfully",
+          data: ratings
+      });
+
+  } catch (err) {
+      console.error("Error:", err.message);
+      res.status(500).json({
+          message: "Error fetching user ratings"
+      });
+  }
+};
+
+export {addRating, getRatingsForMovie, getUserRatings}
