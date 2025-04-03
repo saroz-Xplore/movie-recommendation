@@ -43,12 +43,7 @@ const getAllMovies = async (req, res) => {
   try {
 
     const user = await User.findById(req.user?._id);
-      if (!user || !user.isAdmin) {
-          return res.status(403).json({ 
-            message: "Unauthorized: Admin access" 
-        });
-      }
-
+    
     const movies = await Movie.find();  
 
     res.status(200).json(movies);

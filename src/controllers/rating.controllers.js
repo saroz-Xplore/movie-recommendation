@@ -49,4 +49,29 @@ const addRating = async (req, res) => {
   }
 };
 
-export {addRating}
+
+const getRatingsForMovie = async (req, res) => {
+  try {
+      const { movieId } = req.params;
+
+      const ratings = await Rating.find({ movieId }).populate("userId", "name email");
+
+      if (!ratings.length) {
+          return res.status(404).json({
+              message: "No ratings found for this movie"
+          });
+      }
+
+      res.status(200).json({
+          message: "Ratings fetched successfully",
+          data: ratings
+      });
+
+  } catch (err) {
+      console.error("Error:", err.message);
+      res.status(500).json({
+          message: "Error fetching ratings"
+      });
+  }
+};
+export {addRating, getRatingsForMovie}
