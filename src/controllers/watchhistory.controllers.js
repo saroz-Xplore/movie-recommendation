@@ -29,4 +29,21 @@ const addToWatchHistory = async (req, res) => {
   }
 };
 
-export {addToWatchHistory}
+
+const getWatchHistory = async (req, res) => {
+    try {
+      const userId = req.user?._id;
+  
+      const history = await WatchHistory.find({ userId }).populate("movieId", "title genre releaseDate")
+  
+      res.status(200).json({ 
+        message : "Fetched watch history successfully",
+        data: history });
+
+    } catch (error) {
+      console.log("Error:", error.message);
+      res.status(500).json({ message: "Unable to fetched" });
+    }
+  };
+
+export {addToWatchHistory, getWatchHistory}
