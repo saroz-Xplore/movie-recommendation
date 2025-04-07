@@ -60,4 +60,18 @@ const removeFromFavourites = async (req, res) => {
     }
   };
 
-export { addToFavourites, removeFromFavourites }
+  const getUserFavourites = async (req, res) => {
+    try {
+      const favourites = await Favourite.find({ userId: req.user?._id }).populate("movieId", "title genre releaseYear");
+  
+      res.status(200).json({ 
+        data: favourites 
+      });
+
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching favorites" });
+    }
+  };
+  
+
+export { addToFavourites, removeFromFavourites, getUserFavourites }
