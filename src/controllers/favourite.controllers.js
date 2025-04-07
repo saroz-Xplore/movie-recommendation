@@ -33,4 +33,31 @@ const addToFavourites = async (req, res) => {
   }
 };
 
-export { addToFavourites }
+
+const removeFromFavourites = async (req, res) => {
+    try {
+      const { movieId } = req.params;
+  
+      const removed = await Favourite.findOneAndDelete({
+        userId: req.user?._id,
+        movieId
+      });
+  
+      if (!removed) {
+        return res.status(404).json({ 
+            message: "Favourite not found" 
+        });
+      }
+  
+      res.status(200).json({ 
+        message: "Removed from favourites" 
+    });
+
+    } catch (error) {
+      res.status(500).json({ 
+        message: "Error removing from favourites" 
+    });
+    }
+  };
+
+export { addToFavourites, removeFromFavourites }
