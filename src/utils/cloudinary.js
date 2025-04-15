@@ -15,7 +15,7 @@ const uploadToCloudinary = async(localFilePath)=>{
     try {
         if(!localFilePath) return 
         const response = await cloudinary.uploader.upload(localFilePath,{
-            folder:"instagram" ,resource_type:"auto"
+            folder:"movie-recommendation" ,resource_type:"auto"
         })
         fs.unlinkSync(localFilePath)
         return response
@@ -26,4 +26,12 @@ const uploadToCloudinary = async(localFilePath)=>{
     }
 }
 
-export  {uploadToCloudinary}
+const deleteFromCloudinary = async (publicId) => {
+    try {
+        await cloudinary.uploader.destroy(publicId);
+    } catch (error) {
+        console.log("Cloudinary deletion error:", error);
+    }
+};
+
+export  {uploadToCloudinary, deleteFromCloudinary }

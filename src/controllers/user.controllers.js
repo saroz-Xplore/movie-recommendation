@@ -1,5 +1,6 @@
 import { User } from "../models/user.models.js"
 import {uploadToCloudinary} from "../utils/cloudinary.js";
+import { deleteFromCloudinary } from "../utils/cloudinary.js";
 import fs from 'fs';
 
 const generateAccessToken = async(userId) => {
@@ -29,18 +30,20 @@ const generateRefreshToken = async(userId) => {
 
 
 const RegisterUser = async(req, res) => {
-    try {
-        const {username, email, password} = req.body
+        let cloudinaryId = null;
+        try {
+            const {username, email, password} = req.body
 
         const existingUser = await User.findOne({email: email})
         if(existingUser)
             {
-            res.status(409).json({
+            return res.status(409).json({
                 message: "Error: Existing User " })
         }
 
         const PhotoUrl = `public/images/${req.file.filename}`
         const upload = await  uploadToCloudinary(PhotoUrl)
+        cloudinaryId = upload.public_id;
 
         const user = await User.create({
             username,
@@ -51,7 +54,7 @@ const RegisterUser = async(req, res) => {
 
         const usercreated = await User.findById(user._id).select("-password")
         if(!usercreated){
-            res.status(500).json({
+           return res.status(500).json({
                 message: "registration error"
                 
             })
@@ -70,7 +73,14 @@ const RegisterUser = async(req, res) => {
                          console.log("File deletion error:", err);
                 });
             }
-            
+
+            if (cloudinaryId) {
+                try {
+                    await deleteFromCloudinary(cloudinaryId);
+                } catch (cloudinaryError) {
+                    console.log("Cloudinary deletion error:", cloudinaryError);
+                }
+            }
         res.status(500).json({
             message: "unable to register user"
         })
