@@ -1,5 +1,6 @@
 import { User } from "../models/user.models.js"
 import {uploadToCloudinary} from "../utils/cloudinary.js";
+import fs from 'fs';
 
 const generateAccessToken = async(userId) => {
     try {
@@ -62,6 +63,14 @@ const RegisterUser = async(req, res) => {
 
     } catch (error) {
         console.log("Error", error);
+
+        if (req.file?.filename) {
+                fs.unlink(`public/images/${req.file.filename}`, err => { 
+                        if (err)
+                         console.log("File deletion error:", err);
+                });
+            }
+            
         res.status(500).json({
             message: "unable to register user"
         })
